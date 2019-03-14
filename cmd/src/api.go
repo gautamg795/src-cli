@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"crypto/tls"
 
 	"github.com/kballard/go-shellquote"
 	"github.com/mattn/go-isatty"
@@ -205,7 +206,11 @@ func (a *apiRequest) do() error {
 	req.Body = ioutil.NopCloser(&buf)
 
 	// Perform the request.
-	resp, err := http.DefaultClient.Do(req)
+    tr := &http.Transport{
+        TLSClientConfig: &tls.Config{InsecureSkipVerify : true},
+    }
+    client := &http.Client{Transport: tr}
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
